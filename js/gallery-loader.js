@@ -2,8 +2,6 @@ $(document).ready(function () {
   var $carousel = $('#gallery-carousel');
   if (!$carousel.length) return;
 
-  var autoSlideTimer = null;
-
   function initGalleryCarousel(images) {
     if (!images || !images.length) {
       images = ['RS1.jpg', 'RS2.jpg', 'RS3.jpg', 'pic1.jpg'];
@@ -24,7 +22,7 @@ $(document).ready(function () {
       var slideHtml =
         '<div class="item">' +
           '<a href="' + imgPath + '" class="image-popup gallery-card-item" title="">' +
-            '<img src="' + imgPath + '" alt="" loading="lazy">' +
+            '<img src="' + imgPath + '" alt="" loading="lazy" decoding="async">' +
           '</a>' +
         '</div>';
       $carousel.append(slideHtml);
@@ -40,17 +38,22 @@ $(document).ready(function () {
       margin: 16,
       nav: false,
       dots: false,
+      /* Single source of truth for auto-advance — no competing setInterval */
       autoplay: true,
-      autoplayTimeout: 3000,
+      autoplayTimeout: 3500,
       autoplayHoverPause: true,
-      autoplaySpeed: 1200,
-      smartSpeed: 1200,
-      fluidSpeed: 1200,
-      dragEndSpeed: 400,
+      /* Transition fully completes before next slide starts */
+      autoplaySpeed: 800,
+      smartSpeed: 800,
+      fluidSpeed: false,
+      dragEndSpeed: 300,
       mouseDrag: true,
       touchDrag: true,
       pullDrag: true,
       freeDrag: false,
+      /* Prevent layout reflow during slide */
+      lazyLoad: false,
+      rewind: false,
       responsive: {
         0:    { items: 1 },
         600:  { items: 2 },
@@ -58,17 +61,15 @@ $(document).ready(function () {
       }
     });
 
-    if (autoSlideTimer) clearInterval(autoSlideTimer);
-    autoSlideTimer = setInterval(function () {
-      $carousel.trigger('next.owl.carousel', [900]);
-    }, 2500);
-
-    $('.gallery-carousel .image-popup').magnificPopup({
-      type: 'image',
-      gallery: { enabled: true },
-      removalDelay: 300,
-      mainClass: 'mfp-fade',
-      zoom: { enabled: false }
+    /* Lightbox — initialise once after carousel is ready */
+    $carousel.on('initialized.owl.carousel refreshed.owl.carousel', function () {
+      $('.gallery-carousel .image-popup').magnificPopup({
+        type: 'image',
+        gallery: { enabled: true },
+        removalDelay: 300,
+        mainClass: 'mfp-fade',
+        zoom: { enabled: false }
+      });
     });
   }
 

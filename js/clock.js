@@ -1,8 +1,7 @@
 $(document).ready(function () {
   var clock;
-  var currentDate = new Date();
-  var targetDate = moment.tz('2026-12-19 12:00', 'Asia/Kolkata');
-  var diff = targetDate / 1000 - currentDate.getTime() / 1000;
+  var targetTimestamp = new Date('2026-12-19T12:00:00+05:30').getTime();
+  var diff = Math.floor((targetTimestamp - Date.now()) / 1000);
 
   if (diff <= 0) {
     clock = $('.clock').FlipClock(0, {
@@ -15,13 +14,5 @@ $(document).ready(function () {
       clockFace: 'DailyCounter',
       countdown: true
     });
-
-    function checktime() {
-      if (clock.getTime() <= 0) {
-        clock.setTime(0);
-      }
-      setTimeout(checktime, 1000);
-    }
-    setTimeout(checktime, 1000);
   }
 });
